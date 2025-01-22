@@ -4,6 +4,8 @@ A Wi-Fi menu written in bash. Uses rofi and nmcli. Forked from [zbaylin](https:/
 
 ![Screenshot of rofi-wifi-menu](https://user-images.githubusercontent.com/19492564/147341323-3c5cfd08-1f66-4555-b21f-038f063bcf44.png)
 
+https://www.youtube.com/watch?v=v8w1i3wAKiw
+
 ### Installation
 
 Install `nmcli` and `rofi` with your package manager. If you want to use the icons, set your Rofi font to a [Nerd Font](https://github.com/ryanoasis/nerd-fonts). Then run the following commands:
