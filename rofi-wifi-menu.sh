@@ -2,7 +2,7 @@
 #
 # Autor:           Eric Murphy    - https://www.youtube.com/@EricMurphyxyz    | https://github.com/ericmurphyxyz
 # Colaboração:     Fernando Souza - https://www.youtube.com/@fernandosuporte/ | https://github.com/tuxslack
-# Data:            
+# Data:            23/11/2023
 # Script:          rofi-wifi-menu.sh
 # Versão:          0.2
 # 
