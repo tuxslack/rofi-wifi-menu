@@ -11,7 +11,7 @@ https://www.youtube.com/watch?v=v8w1i3wAKiw
 Install `nmcli` and `rofi` with your package manager. If you want to use the icons, set your Rofi font to a [Nerd Font](https://github.com/ryanoasis/nerd-fonts). Then run the following commands:
 
 ```
-git clone https://github.com/ericmurphyxyz/rofi-wifi-menu.git
+git clone https://github.com/tuxslack/rofi-wifi-menu.git
 cd rofi-wifi-menu
 bash "./rofi-wifi-menu.sh"
 ```
