@@ -5,7 +5,9 @@
 # Data:            23/11/2023
 # Script:          rofi-wifi-menu.sh
 # Versão:          0.2
-# 
+#
+# Um menu Wi-Fi escrito em bash. Usa rofi e nmcli.
+#
 #
 # Data da atualização:  22/01/2025 as 19:38:37
 #
@@ -15,9 +17,112 @@
 
 # https://www.youtube.com/watch?v=v8w1i3wAKiw
 # https://plus.diolinux.com.br/t/como-poder-usar-algum-script-do-rofi-em-um-so-atalho/47781/4
+# https://www.vivaolinux.com.br/dica/Erro-msgfmt-Resolvido
+
+
+# FONT="DejaVu Sans Mono 8"
+
+FONT="Monospace 12"
 
 
 clear
+
+# ----------------------------------------------------------------------------------------
+
+# Cores para formatação da saída dos comandos
+
+RED='\e[1;31m'
+GREEN='\e[1;32m'
+YELLOW='\e[1;33m'
+NC='\e[0m' # sem cor
+
+
+# ----------------------------------------------------------------------------------------
+
+
+# Obtém o idioma do sistema
+
+idioma=$(echo "$LANG" | cut -d. -f1)  # | cut -d_ -f1  Extrai a parte do idioma antes do "_"
+
+# Caminho do arquivo, com base na variável do idioma.
+
+arquivo="/usr/share/locale/$idioma/LC_MESSAGES/rofi-wifi-menu.mo"
+
+
+diretorio=$(dirname "$arquivo")  # Obtém o diretório onde o arquivo está localizado
+
+
+# Verificar se o diretório existe
+
+# !: O símbolo de exclamação nega a condição seguinte. Ou seja, ele inverte o resultado. 
+# Se a condição -d "$diretorio" normalmente fosse verdadeira (indicando que o diretório 
+# existe), a negação (!) a tornaria falsa (indicando que o diretório não existe).
+
+if [ ! -d "$diretorio" ]; then
+
+#    message=$(gettext 'The folder %s exists.')
+
+#    echo -e "\n${GREEN}$(printf "$message" "$diretorio") ${NC}\n"
+
+
+# else
+
+    message=$(gettext 'The folder %s does not exist.')
+
+    echo -e "\n${RED}$(printf "$message" "$diretorio") ${NC}\n"
+
+    exit
+
+fi
+
+
+
+
+# Verificar se o arquivo existe
+
+# !: O símbolo de exclamação nega a condição seguinte. Ou seja, ele inverte o resultado. 
+# Se a condição -d "$diretorio" normalmente fosse verdadeira (indicando que o diretório 
+# existe), a negação (!) a tornaria falsa (indicando que o diretório não existe).
+
+if [ ! -f "$arquivo" ]; then
+
+#    message=$(gettext 'The file %s exists.')
+
+#    echo -e "\n${GREEN}$(printf "$message" "$arquivo") ${NC}\n"
+
+#    ls -lh "$arquivo"
+
+
+# else
+
+    message=$(gettext 'The file %s does not exist.')
+
+    echo -e "\n${RED}$(printf "$message" "$arquivo") ${NC}\n"
+
+    exit
+
+fi
+
+
+
+# Explicação:
+#
+#    -d: Verifica se o diretório existe.
+#    -f: Verifica se o arquivo existe.
+#
+# Essa parte do script verifica ambos, o diretório onde o arquivo está e o arquivo em si. 
+
+
+
+# ----------------------------------------------------------------------------------------
+
+# Carregar arquivos .mo com textdomain
+
+# Define a variável de ambiente do idioma
+
+export LANG="$LANG"
+export TEXTDOMAIN=rofi-wifi-menu
+export TEXTDOMAINDIR=/usr/share/locale
 
 # ----------------------------------------------------------------------------------------
 
@@ -26,7 +131,10 @@ clear
 
 check_command() {
 
-    command -v "$1" &>/dev/null || { echo -e "\nError: $1 is not installed. Please install it to use this script. \n"; exit 1; }
+
+    message=$(gettext 'Error: %s is not installed. Please install it to use this script.')
+
+    command -v "$1" &>/dev/null || { echo -e "\n${RED}$(printf "$message" "'$1'") ${NC}\n"; exit 1; }
 
 }
 
@@ -35,11 +143,16 @@ check_command() {
 
 # Verificando dependências.
 
-for cmd in "notify-send" "nmcli" "sed" "rofi" "dmenu" "fc-list"; do
+for cmd in "notify-send" "nmcli" "sed" "rofi" "dmenu" "fc-list" "gettext"; do
 
     check_command "$cmd"
 
 done
+
+
+# O problema é que no NixOS você precisa instalar o pacote libnotify junto com o dunst.
+
+# A documentação não inclui uma biblioteca que está faltando na versão do PopOS baseada no Ubuntu!
 
 
 # ----------------------------------------------------------------------------------------
@@ -76,14 +189,14 @@ check_font() {
 # padrão, mas não precisa da saída do grep.
 
 
-        echo "Error: Neither 'Font Awesome' nor 'Nerd Fonts' is installed."
-        echo "Please install one of them to use this script."
-        echo
-        echo "Font Awesome: You can install the Font Awesome package from your system's repositories or download it directly from the official website:"
-        echo "  https://fontawesome.com/"
-        echo
-        echo "Nerd Fonts: Nerd Fonts can be installed directly from the official website, or you can use available packages from your Linux distribution's repositories:"
-        echo "font3270:  https://www.nerdfonts.com/"
+        echo -e "\n${RED}$(gettext "Error: Neither 'Font Awesome' nor 'Nerd Fonts' is installed. 
+
+Please install one of them to use this script. 
+
+Font Awesome: Install from your system's repositories or from the official website: https://fontawesome.com/ 
+
+Nerd Fonts: Install from the official website or your system's repositories: font3270 - https://www.nerdfonts.com/") ${NC}\n"
+
 
         exit 1
 
@@ -113,7 +226,7 @@ wifi_status=$(nmcli radio wifi)
 
 if   [[ "$wifi_status" =~ "enabled" || "$wifi_status" =~ "habilitado" ]]; then
 
-	    toggle="󰖪  Disable Wi-Fi"
+	    toggle="󰖪  $(gettext 'Disable Wi-Fi')"
 
 
 # ----------------------------------------------------------------------------------------
@@ -121,7 +234,7 @@ if   [[ "$wifi_status" =~ "enabled" || "$wifi_status" =~ "habilitado" ]]; then
 
 # Exibe uma notificação informando que a busca de redes Wi-Fi está em andamento.
 
-notify-send "Getting list of available Wi-Fi networks..."
+notify-send "$(gettext 'Getting list of available Wi-Fi networks...')"
 
 
 # Aguarda 1 segundo para exibir a notificação
@@ -133,7 +246,20 @@ sleep 1
 
 # Get a list of available wifi connections and morph it into a nice-looking list
 
-wifi_list=$(nmcli --fields "SECURITY,SSID" device wifi list | sed 1d | sed 's/  */ /g' | sed -E "s/WPA*.?\S/ /g" | sed "s/^--/ /g" | sed "s/  //g" | sed "/--/d")
+
+# nmcli device wifi list
+
+# Original
+
+# wifi_list=$(nmcli --fields "SECURITY,SSID" device wifi list | sed 1d | sed 's/  */ /g' | sed -E "s/WPA*.?\S/ /g" | sed "s/^--/ /g" | sed "s/  //g" | sed "/--/d")
+
+
+# wifi_list=$(nmcli --fields "SECURITY,SSID,ACTIVE" device wifi list | sed 1d | sed 's/  */ /g' | sed -E "s/WPA*.?\S/ /g" | sed "s/^--/ /g" | sed "s/  //g" | sed "/--/d" | sed "s/no//" | sed "s/yes/✔/")
+
+
+# SECURITY,SSID,CHAN,RATE,SIGNAL,BARS
+
+wifi_list=$(nmcli --fields "SECURITY,SSID,BARS" device wifi list | sed 1d | sed 's/  */ /g' | sed -E "s/WPA*.?\S/ /g" | sed "s/^--/ /g" | sed "s/  //g" | sed "/--/d")
 
 
 # ----------------------------------------------------------------------------------------
@@ -141,11 +267,15 @@ wifi_list=$(nmcli --fields "SECURITY,SSID" device wifi list | sed 1d | sed 's/  
 
 elif [[ "$wifi_status" =~ "disabled" || "$wifi_status" =~ "desabilitado" ]]; then
 
-	    toggle="󰖩  Enable Wi-Fi"
+	    toggle="󰖩  $(gettext 'Enable Wi-Fi')"
 
+
+
+
+
+# fi do "Habilitar Wi-Fi"
 
 fi
-
 
 # ----------------------------------------------------------------------------------------
 
@@ -156,8 +286,10 @@ fi
 
 # Use rofi to select wifi network
 
-chosen_network=$(echo -e "$toggle\n$wifi_list" | uniq -u | rofi -dmenu -i -selected-row 1 -p "Wi-Fi SSID: ")
+# chosen_network=$(echo -e "$toggle\n$wifi_list" | uniq -u | rofi -dmenu -i -selected-row 1 -p "Wi-Fi SSID: ")
 
+
+chosen_network=$(echo -e "$toggle\n$wifi_list" | uniq -u | rofi -dmenu -i -selected-row 1 -p "Wi-Fi SSID: "   -font "$FONT")
 
 # ----------------------------------------------------------------------------------------
 
@@ -173,6 +305,7 @@ if [ -z "$chosen_network" ]; then
 fi
 
 # ----------------------------------------------------------------------------------------
+
 
 
 # Get name of connection
@@ -191,18 +324,18 @@ chosen_id="${chosen_network:3}"
 # Lidar com ativação/desativação de Wi-Fi.
 
 
-if  [ "$chosen_network" = "󰖩  Enable Wi-Fi" ]; then
+if  [ "$chosen_network" = "󰖩  $(gettext 'Enable Wi-Fi')" ]; then
 
 	nmcli radio wifi on
 
-    notify-send "Wi-Fi Enabled" "Wi-Fi has been enabled."
+    notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-connected-symbolic.svg" "$(gettext 'Wi-Fi Enabled')" "$(gettext 'Wi-Fi has been enabled.')"
 
 
-elif [ "$chosen_network" = "󰖪  Disable Wi-Fi" ]; then
+elif [ "$chosen_network" = "󰖪  $(gettext 'Disable Wi-Fi')" ]; then
 
 	nmcli radio wifi off
 
-    notify-send "Wi-Fi Disabled" "Wi-Fi has been disabled."
+    notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-offline-symbolic.svg" "$(gettext 'Wi-Fi Disabled')" "$(gettext 'Wi-Fi has been disabled.')"
 
 else
 
@@ -212,7 +345,9 @@ else
 	# Message to show when connection is activated successfully
 
 
-  	success_message="You are now connected to the Wi-Fi network \"$chosen_id\"."
+    message=$(gettext 'You are now connected to the Wi-Fi network %s.')
+
+  	success_message=$(printf "$message" "\"$chosen_id\"")
 
 
 
@@ -224,29 +359,46 @@ else
 
 
 
+# find /usr/share/icons/ -name "*network-wireless-offline*"
+
+
     # Conectar à rede salva ou pedir senha se necessário
 
     if echo "$saved_connections" | grep -w -q "$chosen_id"; then
 
         # Conecta-se à rede salva.
 
-        nmcli connection up id "$chosen_id" | grep "successfully" && notify-send "Connection Established" "$success_message"
+
+        message=$(gettext 'Failed to connect to %s. Please check the network.')
+
+
+        nmcli connection up id "$chosen_id" | grep "successfully" && notify-send "$(gettext 'Connection Established')" "$success_message" || notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-offline-symbolic.svg" "$(gettext 'Wi-Fi Connection Error')" "$(printf "$message" "'$chosen_id'")"
+
     else
 
         # Se for uma rede protegida, pede a senha.
 
         if [[ "$chosen_network" =~ "" ]]; then
 
-            wifi_password=$(rofi -dmenu -p "Password: ")
+            wifi_password=$(rofi -dmenu -p "$(gettext 'Password:') " -lines 1 -font "$FONT")
 
         fi
 
         # Conecta-se à rede Wi-Fi usando a senha fornecida.
 
-        nmcli device wifi connect "$chosen_id" password "$wifi_password" | grep "successfully" && notify-send "Connection Established" "$success_message"
+        message=$(gettext 'Failed to connect to %s. Please check the network.')
+
+
+        nmcli device wifi connect "$chosen_id" password "$wifi_password" | grep "successfully" && notify-send "$(gettext 'Connection Established')" "$success_message" || notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-offline-symbolic.svg" "$(gettext 'Wi-Fi Connection Error')" "$(printf "$message" "'$chosen_id'")"
+
+
+
+
     fi
 
 
 fi
 
+
 exit 0
+
