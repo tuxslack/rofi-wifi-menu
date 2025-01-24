@@ -483,17 +483,19 @@ sleep 1
 # nmcli device wifi list
 
 
-# Original
+# Original:
 
-# wifi_list=$(nmcli --fields "SECURITY,SSID" device wifi list | sed 1d | sed 's/  */ /g' | sed -E "s/WPA*.?\S/ /g" | sed "s/^--/ /g" | sed "s/  //g" | sed "/--/d")
+wifi_list=$(nmcli --fields "SECURITY,SSID" device wifi list | sed 1d | sed 's/  */ /g' | sed -E "s/WPA*.?\S/ /g" | sed "s/^--/ /g" | sed "s/  //g" | sed "/--/d")
+
+
+
+# Tem que filtar somente o nome da rede wifi:
 
 
 # wifi_list=$(nmcli --fields "SECURITY,SSID,ACTIVE" device wifi list | sed 1d | sed 's/  */ /g' | sed -E "s/WPA*.?\S/ /g" | sed "s/^--/ /g" | sed "s/  //g" | sed "/--/d" | sed "s/no//" | sed "s/yes/✔/")
 
 
-# SECURITY,SSID,CHAN,RATE,SIGNAL,BARS
-
-wifi_list=$(nmcli --fields "SECURITY,SSID,BARS" device wifi list | sed 1d | sed 's/  */ /g' | sed -E "s/WPA*.?\S/ /g" | sed "s/^--/ /g" | sed "s/  //g" | sed "/--/d")
+# wifi_list=$(nmcli --fields "SECURITY,SSID,BARS" device wifi list | sed 1d | sed 's/  */ /g' | sed -E "s/WPA*.?\S/ /g" | sed "s/^--/ /g" | sed "s/  //g" | sed "/--/d")
 
 
 # ----------------------------------------------------------------------------------------
@@ -516,8 +518,6 @@ fi
 
 # Use rofi to select wifi network
 
-# chosen_network=$(echo -e "$toggle\n$wifi_list" | uniq -u | rofi -dmenu -i -selected-row 1 -p "Wi-Fi SSID: ")
-
 
 chosen_network=$(echo -e "$toggle\n$wifi_list" | uniq -u | rofi -dmenu -i -selected-row 1 -p "Wi-Fi SSID: "   -font "$FONT")
 
@@ -536,17 +536,13 @@ fi
 
 # ----------------------------------------------------------------------------------------
 
-
+echo "$chosen_network"
 
 # Get name of connection
 
-# read -r chosen_id <<< "${chosen_network:3}"
-
-
 # Extrai o nome da rede selecionada.
 
-chosen_id="${chosen_network:3}"
-
+read -r chosen_id <<< "${chosen_network:3}"
 
 
 # Lógica para alternar o estado do Wi-Fi.
@@ -589,10 +585,7 @@ else
 
 
 
-# find /usr/share/icons/ -name "*network-wireless-offline*"
-
-
-    # Conectar à rede salva ou pedir senha se necessário
+    # Conectar à rede salva ou pedir senha se necessário.
 
     if echo "$saved_connections" | grep -w -q "$chosen_id"; then
 
@@ -602,7 +595,40 @@ else
         message=$(gettext 'Failed to connect to %s. Please check the network.')
 
 
-        nmcli connection up id "$chosen_id" | grep "successfully" && notify-send  -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-connected-symbolic.svg" "$(gettext 'Connection Established')" "$success_message" || notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-offline-symbolic.svg" "$(gettext 'Wi-Fi Connection Error')" "$(printf "$message" "'$chosen_id'")"
+# find /usr/share/icons/ -name "*network-wireless-offline*"
+
+
+# Em caso de problema com rede verifica esse grep abaixo:
+ 
+# O grep verifica ambas as palavras (sucesso e successfully).
+
+# if nmcli connection up id "$chosen_id" | grep -qiE "sucesso|successfully"; then
+
+
+# Alternativa para evitar problemas com a tradução.
+
+# O comando nmcli connection up é executado normalmente, mas a saída padrão (stdout) e de 
+# erro (stderr) são redirecionadas para /dev/null. Isso faz com que a saída do comando 
+# seja descartada, permitindo que você confie no código de saída para determinar o sucesso 
+# ou falha.
+
+if nmcli connection up id "$chosen_id" > /dev/null 2>&1; then
+
+
+    echo -e "\n${GREEN}$(gettext 'Connection Established') ${NC}\n"
+
+
+    # notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-connected-symbolic.svg" \
+    # "$(gettext 'Connection Established')" "$success_message"
+
+else
+
+    notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-offline-symbolic.svg" \
+    "$(gettext 'Wi-Fi Connection Error')" "$(printf "$message" "$chosen_id")"
+
+fi
+
+
 
     else
 
@@ -616,11 +642,46 @@ else
 
         # Conecta-se à rede Wi-Fi usando a senha fornecida.
 
+
+
+
+       # nmcli device wifi connect "$chosen_id" password "$wifi_password" | grep "successfully" && notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-connected-symbolic.svg" "$(gettext 'Connection Established')" "$success_message" || notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-offline-symbolic.svg" "$(gettext 'Wi-Fi Connection Error')" "$(printf "$message" "'$chosen_id'")"
+
+
+# Tentar se conectar à rede Wi-Fi
+
+# A opção --ask no comando nmcli é para ele pedir a senha de forma interativa, mas isso 
+# só funcionará se o script for executado em um ambiente que permita interação (ou seja, 
+# se você executar o script diretamente no terminal e puder fornecer a senha manualmente).
+
+
+if nmcli device wifi connect "$chosen_id" password "$wifi_password" --ask ; then
+
+
+    # Verificar o status da interface para garantir que a conexão foi estabelecida.
+
+    if nmcli device status | grep -q "$chosen_id".*connected ; then
+
+        notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-connected-symbolic.svg" \
+        "$(gettext 'Connection Established')" "$success_message"
+
+    else
+
         message=$(gettext 'Failed to connect to %s. Please check the network.')
 
+        notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-offline-symbolic.svg" \
+        "$(gettext 'Wi-Fi Connection Error')" "$(printf "$message" "$chosen_id")"
+    fi
 
-        nmcli device wifi connect "$chosen_id" password "$wifi_password" | grep "successfully" && notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-connected-symbolic.svg" "$(gettext 'Connection Established')" "$success_message" || notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-offline-symbolic.svg" "$(gettext 'Wi-Fi Connection Error')" "$(printf "$message" "'$chosen_id'")"
 
+else
+
+    # Se o comando nmcli falhar ao conectar.
+
+    notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-offline-symbolic.svg" \
+    "$(gettext 'Wi-Fi Connection Error')" "$(printf "$message" "$chosen_id")"
+
+fi
 
 
 
