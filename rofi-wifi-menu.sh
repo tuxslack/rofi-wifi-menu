@@ -27,6 +27,7 @@
 # https://www.youtube.com/watch?v=v8w1i3wAKiw
 # https://plus.diolinux.com.br/t/como-poder-usar-algum-script-do-rofi-em-um-so-atalho/47781/4
 # https://www.vivaolinux.com.br/dica/Erro-msgfmt-Resolvido
+# https://people.freedesktop.org/~lkundrak/nm-docs/nmcli.html
 
 
 # FONT="DejaVu Sans Mono 8"
@@ -133,8 +134,62 @@ fi
 
 
 
+# ----------------------------------------------------------------------------------------
+
+
+# Função para verificar a conexão com a internet
+# 
+# 
+# O comando ping -q -c 1 -W 1 8.8.8.8 não depende de configuração DNS, porque está 
+# tentando alcançar o endereço IP direto (8.8.8.8 é um servidor DNS público do Google). 
+# Isso significa que o ping vai ser feito utilizando o IP, não o nome de domínio.
+# 
+# 
+# Explicação:
+# 
+#  O ping utiliza o protocolo ICMP e envia pacotes diretamente para o endereço IP que 
+# você especificar.
+# 
+#  O DNS só é necessário quando você está tentando acessar um domínio por nome, como 
+# www.google.com. Nesse caso, o sistema precisa resolver o nome para o IP correspondente, 
+# o que exige um servidor DNS.
+# 
+# Portanto, o comando ping para o IP 8.8.8.8 vai funcionar, mesmo que o DNS esteja mal 
+# configurado ou não configurado, porque não envolve a resolução de nomes. Ele apenas 
+# tenta alcançar o IP diretamente.
+# 
+# Se você estiver tendo problemas de conexão de rede e ainda assim quiser verificar a 
+# conectividade por nome de domínio, aí sim seria necessário testar com o nome de um 
+# domínio, como google.com.
+# 
+# 
+# -q: modo silencioso, sem saída excessiva.
+# 
+# -c 1: faz apenas 1 tentativa de ping.
+# 
+# -W 1: espera no máximo 1 segundo por uma resposta.
+
+
+verificar_internet() {
+
+    # Tenta fazer um ping no Google (ou qualquer outro servidor confiável)
+
+    if ping -q -c 1 -W 1 8.8.8.8 > /dev/null; then
+
+        return 0  # Retorna 0 se estiver online
+
+    else
+
+        return 1  # Retorna 1 se não estiver online
+
+    fi
+
+}
 
 # ----------------------------------------------------------------------------------------
+
+
+
 
 # Função para verificar se um comando está instalado.
 
@@ -269,7 +324,19 @@ else
 
     echo -e "\n${GREEN}$(gettext 'Rebuilding the system to apply the changes...') ${NC}\n"
 
-    sudo nixos-rebuild switch
+
+    # Usando a função verificar_internet
+
+# O operador && garante que o próximo comando (sudo nixos-rebuild switch) seja executado 
+# somente se o comando anterior (verificar_internet) tiver sucesso (retornar 0).
+# 
+#  Se verificar_internet detectar que a máquina está conectada à internet, ela retorna 0, 
+# permitindo que o comando sudo nixos-rebuild switch seja executado.
+# 
+#  Se a função verificar_internet não detectar uma conexão (retornar um código de erro 
+# diferente de 0), o comando sudo nixos-rebuild switch não será executado.
+
+    verificar_internet && sudo nixos-rebuild switch
     
 
     # Verificar se a instalação foi bem-sucedida
@@ -317,7 +384,25 @@ if grep -q -i "pop" /etc/os-release || grep -q -i "debian" /etc/os-release || gr
             
             # Executa o comando sudo apt update && sudo apt install -y libnotify-bin
 
-            sudo apt update && sudo apt install -y libnotify-bin
+
+            # Usando a função verificar_internet
+
+
+# O operador && garante que o próximo comando 
+# (sudo apt update && sudo apt install -y libnotify-bin) seja executado somente se o 
+# comando anterior (verificar_internet) tiver sucesso (retornar 0).
+# 
+# Se verificar_internet detectar que a máquina está conectada à internet, ela retorna 0, 
+# permitindo que o comando (sudo apt update && sudo apt install -y libnotify-bin) seja 
+# executado.
+# 
+# Se a função verificar_internet não detectar uma conexão (retornar um código de erro 
+# diferente de 0), o comando (sudo apt update && sudo apt install -y libnotify-bin) não 
+# será executado.
+
+
+              verificar_internet && sudo apt update && sudo apt install -y libnotify-bin
+
 
             # Verifica se o comando anterior teve erro
 
@@ -496,6 +581,7 @@ if ! nmcli dev wifi rescan 2> /dev/null; then
 
 
     exit 1
+
 fi
 
 
@@ -505,7 +591,7 @@ fi
 
 networks=$(nmcli -t -f SSID dev wifi | sort)
 
-# Se houver redes disponíveis, abre o Rofi para que o usuário possa selecionar
+# Se houver redes disponíveis, abre o Rofi para que o usuário possa selecionar.
 
 if [ ! -n "$networks" ]; then
 
