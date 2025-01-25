@@ -152,7 +152,7 @@ check_command() {
 
 # Verificando dependências.
 
-for cmd in "notify-send" "nmcli" "sed" "rofi" "dmenu" "fc-list" "gettext" "yad" "sudo" "sed" "grep"; do
+for cmd in "notify-send" "nmcli" "sed" "rofi" "dmenu" "fc-list" "gettext" "yad" "sudo" "sed" "grep" "sort"; do
 
     check_command "$cmd"
 
@@ -215,6 +215,23 @@ if grep -q -i "nixos" /etc/os-release  ; then
 # Caminho para o arquivo de configuração
 
 CONFIG_FILE="/etc/nixos/configuration.nix"
+
+
+
+# Verifica se o arquivo $CONFIG_FILE existe
+
+if [ ! -f $CONFIG_FILE ]; then
+
+    message=$(gettext 'The %s file was not found!')
+
+    yad --center --title="$(gettext 'Error')" --text="$(printf "$message" "$CONFIG_FILE")" --button="OK":0 --width="300" --height="150"
+
+    exit 1
+
+
+fi
+
+
 
 # Verificar se libnotify-bin já está na configuração
 
@@ -465,6 +482,52 @@ if   [[ "$wifi_status" =~ "enabled" || "$wifi_status" =~ "habilitado" ]]; then
 # ----------------------------------------------------------------------------------------
 
 
+# Atualiza a lista de redes Wi-Fi
+
+# Tenta realizar o escaneamento das redes Wi-Fi.
+
+if ! nmcli dev wifi rescan 2> /dev/null; then
+
+    # Caso o escaneamento falhe, avisa o usuário.
+
+    echo -e "\n${RED}$(gettext 'Error scanning Wi-Fi networks.') ${NC}\n"
+
+    notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-offline-symbolic.svg" -t 20000 "$(gettext 'Error')" "$(gettext 'Error scanning Wi-Fi networks.')"
+
+
+    exit 1
+fi
+
+
+
+
+# Lista as redes Wi-Fi disponíveis, selecionando apenas o nome da rede (SSID)
+
+networks=$(nmcli -t -f SSID dev wifi | sort)
+
+# Se houver redes disponíveis, abre o Rofi para que o usuário possa selecionar
+
+if [ ! -n "$networks" ]; then
+
+# Se não houver redes disponíveis, não abre o Rofi.
+
+
+# O erro "Scanning not allowed while unavailable" ocorre quando a interface de rede Wi-Fi 
+# está desativada ou indisponível para realizar a varredura. Isso pode acontecer por alguns 
+# motivos, como a interface de rede não estar ativada ou a interface estar em um estado 
+# de "desconexão".
+
+exit
+
+fi
+
+
+
+
+# ----------------------------------------------------------------------------------------
+
+
+
 # Exibe uma notificação informando que a busca de redes Wi-Fi está em andamento.
 
 notify-send -i "/usr/share/icons/Adwaita/symbolic/status/network-wireless-connected-symbolic.svg" "$(gettext 'Getting list of available Wi-Fi networks...')"
@@ -506,7 +569,6 @@ elif [[ "$wifi_status" =~ "disabled" || "$wifi_status" =~ "desabilitado" ]]; the
 	    toggle="󰖩  $(gettext 'Enable Wi-Fi')"
 
 
-
 fi
 
 # ----------------------------------------------------------------------------------------
@@ -518,8 +580,7 @@ fi
 
 # Use rofi to select wifi network
 
-
-chosen_network=$(echo -e "$toggle\n$wifi_list" | uniq -u | rofi -dmenu -i -selected-row 1 -p "Wi-Fi SSID: "   -font "$FONT")
+chosen_network=$(echo -e "$toggle\n$wifi_list" | uniq -u | rofi -dmenu -i -selected-row 1 -p "$(gettext 'Choose a Wi-Fi network:') "   -font "$FONT")
 
 # ----------------------------------------------------------------------------------------
 
@@ -636,7 +697,11 @@ fi
 
         if [[ "$chosen_network" =~ "" ]]; then
 
-            wifi_password=$(rofi -dmenu -p "$(gettext 'Password:') " -lines 1 -font "$FONT")
+
+           # Solicita a senha.
+
+            wifi_password=$(rofi -dmenu -password -p "$(gettext 'Enter the network password:') " -lines 1 -font "$FONT")
+
 
         fi
 
@@ -654,6 +719,8 @@ fi
 # só funcionará se o script for executado em um ambiente que permita interação (ou seja, 
 # se você executar o script diretamente no terminal e puder fornecer a senha manualmente).
 
+
+# Conecta-se à rede escolhida
 
 if nmcli device wifi connect "$chosen_id" password "$wifi_password" --ask ; then
 
@@ -689,6 +756,8 @@ fi
 
 
 fi
+
+
 
 
 exit 0
