@@ -28,7 +28,8 @@ PopOS! does not have the notify-send library installed by default. You can insta
 
 ### Rofi Theme
 
-Back up the original config.rasi file.
+Back up the original config.rasi file. <br>
+
 Copy the config.rasi file to the ~/.config/rofi/ folder
 
   ```bash
