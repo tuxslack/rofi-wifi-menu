@@ -39,3 +39,28 @@ $ cp config.rasi ~/.config/rofi/
   ```
 This Rofi theme uses the font "Hack Nerd Font Medium"
 Download: https://www.nerdfonts.com/
+
+
+### Window managers use:
+
+Start the notification daemon
+
+OpenBox
+
+$ nano ~/.config/openbox/autostart
+
+dunst &
+
+i3wm
+
+$ nano ~/.config/i3/config
+
+exec --no-startup-id dunst
+
+FluxBox
+
+$ nano ~/.fluxbox/startup
+
+pkill dunst ; dunst &
+
+
