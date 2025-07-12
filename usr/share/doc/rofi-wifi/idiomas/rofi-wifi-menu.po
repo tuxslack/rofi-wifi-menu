@@ -1,0 +1,279 @@
+#
+#
+# Autor:           Eric Murphy    - https://www.youtube.com/@EricMurphyxyz    | https://github.com/ericmurphyxyz
+# Colaboração:     Fernando Souza - https://www.youtube.com/@fernandosuporte/ | https://github.com/tuxslack
+# Data:            23/11/2023
+# Script:          rofi-wifi-menu.sh
+# Versão:          0.2
+#
+# Um menu Wi-Fi escrito em bash. Usa rofi e nmcli.
+#
+#
+# Data da atualização:  23/01/2025 as 12:27:00
+#
+# Licença:  GPL - https://www.gnu.org/
+#
+#
+# Traduzido rofi-wifi-menu.sh para pt_BR.
+#
+#
+# Como faço para gerar um arquivo mo a partir do arqivo po?
+#
+# sudo msgfmt -vv rofi-wifi-menu.po -o /usr/share/locale/pt_BR/LC_MESSAGES/rofi-wifi-menu.mo
+#
+# rofi-wifi-menu.po: 41 mensagens traduzidas.
+#
+#
+# https://docs.freebsd.org/pt-br/books/fdp-primer/po-translations/
+
+
+msgid ""
+msgstr ""
+"Project-Id-Version: rofi-wifi-menu\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2025-11-23 13:49+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Fernando Souza <https://www.youtube.com/@fernandosuporte/ | https://github.com/tuxslack>\n"
+"Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: \n"
+"X-Generator: \n"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "The %s file was not found!"
+msgstr "O arquivo %s não foi encontrado!"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Choose a Wi-Fi network:"
+msgstr "Escolha uma rede Wi-Fi:"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Error scanning Wi-Fi networks."
+msgstr "Erro ao escanear redes Wi-Fi."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "No Wi-Fi devices found."
+msgstr "Nenhum dispositivo Wi-Fi encontrado."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "The folder %s exists."
+msgstr "A pasta %s existe."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "The folder %s does not exist."
+msgstr "A pasta %s não existe."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "The file %s exists."
+msgstr "O arquivo %s existe."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "The file %s does not exist."
+msgstr "O arquivo %s não existe."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Error: %s is not installed. Please install it to use this script."
+msgstr "Erro: %s não está instalado. Por favor, instale-o para usar este script."
+
+# ----------------------------------------------------------------------------------------
+
+msgid ""
+"Error: Neither 'Font Awesome' nor 'Nerd Fonts' is installed. \n\n"
+"Please install one of them to use this script. \n\n"
+"Font Awesome: Install from your system's repositories or from the official website: https://fontawesome.com/ \n\n"
+"Nerd Fonts: Install from the official website or your system's repositories: font3270 - https://www.nerdfonts.com/"
+
+
+msgstr ""
+"Erro: Nem 'Font Awesome' nem 'Nerd Fonts' estão instaladas. \n\n"
+"Por favor, instale uma delas para usar este script. \n\n"
+"Font Awesome: Instale a partir dos repositórios do seu sistema ou do site oficial: https://fontawesome.com/ \n\n"
+"Nerd Fonts: Instale a partir do site oficial ou dos repositórios do seu sistema: font3270 - https://www.nerdfonts.com/"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Disable Wi-Fi"
+msgstr "Desativar Wi-Fi"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Getting list of available Wi-Fi networks..."
+msgstr "Obtendo lista de redes Wi-Fi disponíveis..."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Enable Wi-Fi"
+msgstr "Habilitar Wi-Fi"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Wi-Fi Enabled"
+msgstr "Wi-Fi habilitado"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Wi-Fi has been enabled."
+msgstr "O Wi-Fi foi ativado."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Wi-Fi Disabled"
+msgstr "Wi-Fi desabilitado"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Wi-Fi has been disabled."
+msgstr "O Wi-Fi foi desativado."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "You are now connected to the Wi-Fi network %s."
+msgstr "Agora você está conectado à rede Wi-Fi %s."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Failed to connect to %s. Please check the network."
+msgstr "Falha ao conectar a %s. Verifique a rede."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Connection Established"
+msgstr "Conexão estabelecida"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Wi-Fi Connection Error"
+msgstr "Erro de conexão Wi-Fi"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Enter the network password:"
+msgstr "Digite a senha da rede:"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Error"
+msgstr "Erro"
+
+# ----------------------------------------------------------------------------------------
+
+msgid ""
+"The /etc/os-release file was not found! \n"
+"This may indicate that the system is not Linux or the system structure is corrupt."
+
+msgstr ""
+"O arquivo /etc/os-release não foi encontrado! \n"
+"Isso pode indicar que o sistema não é Linux ou a estrutura do sistema está corrompida."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "The file /etc/os-release exists."
+msgstr "O arquivo /etc/os-release existe."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "The libnotify-bin package is already in the configuration."
+msgstr "O pacote libnotify-bin já está na configuração."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Adding libnotify-bin to configuration..."
+msgstr "Adicionando libnotify-bin à configuração..."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Rebuilding the system to apply the changes..."
+msgstr "Reconstruindo o sistema para aplicar as mudanças..."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "libnotify-bin was installed successfully."
+msgstr "libnotify-bin foi instalado com sucesso."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "There was an error installing libnotify-bin."
+msgstr "Houve um erro ao instalar libnotify-bin."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "This part of the script is intended for NixOS or derivatives of it."
+msgstr "Esta parte do script é destinada a NixOS ou derivados dele."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Installation required"
+msgstr "Instalação necessária"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "The libnotify-bin library is not installed. Do you want to install it?"
+msgstr "A biblioteca libnotify-bin não está instalada. Deseja instalá-la?"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Install"
+msgstr "Instalar"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Cancel"
+msgstr "Cancelar"
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Command failed! An error occurred while trying to install libnotify-bin."
+msgstr "O comando falhou! Ocorreu um erro ao tentar instalar libnotify-bin."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "Command executed successfully. The library has been installed."
+msgstr "Comando executado com sucesso. A biblioteca foi instalada."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "The libnotify-bin library is already installed."
+msgstr "A biblioteca libnotify-bin já está instalada."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "This part of the script is intended for PopOS! or Debian-derived systems."
+msgstr "Esta parte do script é destinada a sistemas PopOS! ou derivados do Debian."
+
+# ----------------------------------------------------------------------------------------
+
+msgid ""
+"The %s folder does not exist. This means that the Adwaita theme icons are not installed. \n\n"
+"Suggestion: \n\n"
+"To fix this, install the 'adwaita-icon-theme' package to get the default icons."
+
+msgstr ""
+"A pasta %s não existe. Isso significa que os ícones do tema Adwaita não estão instalados. \n\n"
+"Sugestão: \n\n"
+"Para corrigir isso, instale o pacote 'adwaita-icon-theme' para obter os ícones padrão."
+
+# ----------------------------------------------------------------------------------------
+
+msgid  "The %s folder exists and the Adwaita icon theme is installed."
+msgstr "A pasta %s existe e o tema de ícones Adwaita está instalado."
+
+# ----------------------------------------------------------------------------------------
+
+# msgid  ""
+# msgstr ""
+
+# ----------------------------------------------------------------------------------------
+
+
+

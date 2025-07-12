@@ -1,0 +1,39 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Rofi Wi-Fi Menu
+Name[pt_BR]=Menu Wi-Fi com Rofi
+Name[es]=Menú Wi-Fi con Rofi
+Name[fr]=Menu Wi-Fi avec Rofi
+Name[de]=Rofi-WLAN-Menü
+Name[it]=Menu Wi-Fi con Rofi
+Name[ru]=Меню Wi-Fi через Rofi
+Name[ja]=Rofi Wi-Fi メニュー
+Name[zh_CN]=Rofi Wi-Fi 菜单
+Comment=Wi-Fi manager using Rofi
+Comment[pt_BR]=Gerenciador de Wi-Fi usando Rofi
+Comment[es]=Gestor de Wi-Fi con Rofi
+Comment[fr]=Gestionnaire Wi-Fi utilisant Rofi
+Comment[de]=WLAN-Verwaltung mit Rofi
+Comment[it]=Gestore Wi-Fi con Rofi
+Comment[ru]=Управление Wi-Fi через Rofi
+Comment[ja]=Rofi を使用した Wi-Fi 管理
+Comment[zh_CN]=使用 Rofi 的 Wi-Fi 管理器
+
+Exec=bash -c "/usr/local/bin/rofi-wifi-menu.sh ; sleep 30"
+
+Icon=network-wireless
+Terminal=true
+Categories=Network;Utility;
+
+# Keywords para facilitar a busca
+Keywords=wifi;rofi;network;wireless;menu;
+Keywords[pt_BR]=wifi;rofi;rede;sem fio;menu;
+Keywords[es]=wifi;rofi;red;inalámbrica;menú;
+Keywords[fr]=wifi;rofi;réseau;menu;sans fil;
+Keywords[de]=wifi;rofi;netzwerk;drahtlos;menü;
+Keywords[it]=wifi;rofi;rete;senza fili;menu;
+Keywords[ru]=wifi;rofi;сеть;беспроводной;меню;
+Keywords[ja]=wifi;rofi;ネットワーク;ワイヤレス;メニュー;
+Keywords[zh_CN]=wifi;rofi;网络;无线;菜单;
+
